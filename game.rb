@@ -2,16 +2,50 @@ require 'csv'
 
 table = CSV.parse(File.read('words.csv'), headers: true)
 
-dictionary = table.map { |row| [ row['ki'], { fr: row['fr'], en: row['en'] } ] }.to_h
-ki_words = dictionary.keys
+DICTIONARY = table.map { |row| [ row['ki'], { fr: row['fr'], en: row['en'] } ] }.to_h
+KI_WORDS = DICTIONARY.keys
 
 
-language = :en
+LANGUAGE = :en
 
-guess = ki_words.sample
-puts "guess : #{guess}"
-answers = []
-answers << dictionary[guess][language]
-other_answers = dictionary.dup.tap { |h| h.delete(guess) }.values.map { |answer| answer[language] }
-answers.concat(other_answers.sample(4))
-puts "answers : #{answers.shuffle}"
+running = true
+total_rounds = 5
+rounds = 0
+results = 0
+
+def get_guess
+  guess = KI_WORDS.sample
+  puts "guess : #{guess}"
+  guess
+end
+
+def get_answers(guess)
+  valid_answer = DICTIONARY[guess][LANGUAGE]
+  other_answers = DICTIONARY.tap { |h| h.delete(guess) }.values.map { |answer| answer[LANGUAGE] }
+  answers = [valid_answer].concat(other_answers.sample(4)).shuffle
+  puts "answers"
+  puts answers.map.with_index { |word, index| "#{index + 1}. #{word}"}.join("\n")
+  { all: answers, valid: valid_answer }
+end
+
+def valid_answer?(choice, answers)
+  answers[:all][choice - 1] == answers[:valid]
+end
+
+puts "----------"
+puts "Welcome"
+puts "----------"
+
+while running && rounds < total_rounds
+  puts ""
+  guess = get_guess
+  answers = get_answers(guess)
+  print "> "
+  choice = gets.chomp.to_i
+  valid = valid_answer?(choice, answers)
+  results += 1 if valid
+  rounds += 1
+  running = choice != 0
+end
+
+puts "Results: #{results} / #{rounds}"
