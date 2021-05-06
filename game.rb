@@ -6,12 +6,12 @@ dictionary = table.map { |row| [ row['ki'], { fr: row['fr'], en: row['en'] } ] }
 ki_words = dictionary.keys
 
 
-language = 'fr'
+language = :en
 
 guess = ki_words.sample
 puts "guess : #{guess}"
 answers = []
-answers << dictionary[guess][:fr]
-other_answers = dictionary.dup.tap { |h| h.delete(guess) }.values.map { |answer| answer[:fr] }
+answers << dictionary[guess][language]
+other_answers = dictionary.dup.tap { |h| h.delete(guess) }.values.map { |answer| answer[language] }
 answers.concat(other_answers.sample(4))
 puts "answers : #{answers.shuffle}"
