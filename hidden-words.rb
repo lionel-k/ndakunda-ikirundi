@@ -5,9 +5,17 @@ simple = CSV.parse(File.read('simple-words.csv'), headers: true)
 DICTIONARY = simple.map { |row| [ row['ki'].upcase, { fr: row['fr'], en: row['en'] } ] }.to_h
 SIMPLE_WORDS = DICTIONARY.keys
 
-DIFFICULT_WORDS = CSV.parse(File.read('difficult-words.csv'), headers: true).to_a
+DIFFICULT_WORDS = CSV.parse(File.read('difficult-words.csv')).to_a.flatten
 
 WORDS = (SIMPLE_WORDS + DIFFICULT_WORDS).shuffle
+
+
+def find_words_with_size(size)
+  WORDS.select { |word| word.size == size }
+end
+
+size_5 = find_words_with_size(5)
+binding.pry
 
 def mix_letters(word)
   word.upcase.chars.shuffle.join('')
@@ -41,4 +49,4 @@ end
 
 # word_scramble(min_size: 8, size_sample: 4)
 # word_search(min_size: 5, size_sample: 7)
-word_match
+# word_match
